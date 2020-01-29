@@ -35,9 +35,9 @@ def create_app(test_config=None):
 
 
   @app.route('/api/v1/categories')
-  def retrieve_categories():
+  def get_all_categories():
     """
-    Get all available categories.
+    Get all categories.
     """
     try:
       categories = Category.query.all()
@@ -77,7 +77,7 @@ def create_app(test_config=None):
     return current_questions
 
   @app.route('/api/v1/questions')
-  def get_questions():
+  def get_all_questions():
     """
     Get all available questions paginated 
     by a maximum number of 10 questions per page.
@@ -111,7 +111,7 @@ def create_app(test_config=None):
   This removal will persist in the database and when you refresh the page. 
   '''
   @app.route("/api/v1/questions/<int:question_id>", methods=['DELETE'])
-  def delete_question(question_id):
+  def delete_a_question(question_id):
     """
     Delete the question of a given id specified in the request url
     """
@@ -142,7 +142,7 @@ def create_app(test_config=None):
   of the questions list in the "List" tab.  
   '''
   @app.route("/api/v1/questions", methods=['POST'])
-  def create_question():
+  def add_a_question():
     """
     Create a new question given question body, 
     answer, category_id, and difficult_id.  
@@ -182,7 +182,7 @@ def create_app(test_config=None):
   Try using the word "title" to start. 
   '''
   @app.route('/api/v1/questions/search', methods=['POST'])
-  def search_questions():
+  def get_all_questions_by_search_term():
     """
     Get all questions based on a search term given it's a substring of the question
     """
@@ -215,7 +215,7 @@ def create_app(test_config=None):
   category to be shown. 
   '''
   @app.route('/api/v1/categories/<int:category_id>/questions')
-  def retrieve_questions_by_category(category_id):
+  def get_questions_by_category(category_id):
     """
     Get all available questions of a given category
     """
@@ -247,7 +247,7 @@ def create_app(test_config=None):
   and shown whether they were correct or not. 
   '''
   @app.route("/api/v1/quizzes", methods=["POST"])
-  def get_quizzes():
+  def play_quiz_game():
     """
     Play a quiz by returning random questions within 
     a given category if provided and that is not one of the
@@ -280,7 +280,7 @@ def create_app(test_config=None):
   '''
 
   @app.errorhandler(400)
-  def custom400(error):
+  def error400(error):
       response = jsonify({
           'success': False,
           'message': 'Bad Request'
@@ -288,7 +288,7 @@ def create_app(test_config=None):
       return response, 400
   
   @app.errorhandler(404)
-  def custom404(error):
+  def error404(error):
       response = jsonify({
           'success': False,
           'message': 'Resource not found'
@@ -296,7 +296,7 @@ def create_app(test_config=None):
       return response, 404
 
   @app.errorhandler(405)
-  def custom405(error):
+  def error405(error):
       response = jsonify({
           'success': False,
           'message': 'Method not allowed'
@@ -304,14 +304,14 @@ def create_app(test_config=None):
       return response, 405
 
   @app.errorhandler(422)
-  def custom422(error):
+  def error422(error):
       response = jsonify({
           'message': 'Unable to process request'
       })
       return response, 422
 
   @app.errorhandler(500)
-  def custom500(error):
+  def error500(error):
       response = jsonify({
           'success': False,
           'message': 'Internal server error'
