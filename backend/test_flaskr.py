@@ -15,7 +15,10 @@ class TriviaTestCase(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client
         self.database_name = "trivia_test"
-        self.database_path = "postgres://{}:{}@{}/{}".format('postgres', 'habib1234','localhost:5432', self.database_name)
+        self.database_path = "postgres://{}:{}@{}/{}".\
+            format(
+                'postgres', 'habib1234', 'localhost:5432', self.database_name
+                )
         setup_db(self.app, self.database_path)
 
         # binds the app to the current context
@@ -30,12 +33,11 @@ class TriviaTestCase(unittest.TestCase):
             self.question = Question(
                 question='What is four by four?',
                 answer='Sixteen',
-                category=self.category.id, 
+                category=self.category.id,
                 difficulty=2
             )
             self.db.session.add(self.question)
             self.db.session.commit()
-
 
     def tearDown(self):
         """Executed after reach test"""
@@ -47,7 +49,8 @@ class TriviaTestCase(unittest.TestCase):
 
     """
     TODO
-    Write at least one test for each test for successful operation and for expected errors.
+    Write at least one test for each test for
+    successful operation and for expected errors.
     """
     def test_success_response_for_get_categories(self):
         """
@@ -60,7 +63,7 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_success_response_for_get_questions(self):
         """
-            Test success response for getting all questions 
+            Test success response for getting all questions
         """
         response = self.client().get('/api/v1/questions')
         data = json.loads(response.data)
@@ -105,7 +108,8 @@ class TriviaTestCase(unittest.TestCase):
             Test getting all questions of a given category
         """
         category_id = Category.query.first().id
-        response = self.client().get(f"/api/v1/categories/{category_id}/questions")
+        response = self.client().\
+            get(f"/api/v1/categories/{category_id}/questions")
         data = json.loads(response.data)
         self.assertTrue(response.status_code, 200)
         self.assertEqual(data['success'], True)
@@ -116,7 +120,8 @@ class TriviaTestCase(unittest.TestCase):
             Test getting all questions of a category that doesnot exist
         """
         category_id = Category.query.first().id
-        response = self.client().get(f"/api/v1/categories/{category_id + 1}/questions")
+        response = self.client().\
+            get(f"/api/v1/categories/{category_id + 1}/questions")
         data = json.loads(response.data)
         self.assertTrue(response.status_code, 404)
         self.assertEqual(data['success'], False)
@@ -126,15 +131,15 @@ class TriviaTestCase(unittest.TestCase):
         """
             Test creating a valid question in the database
         """
-        response = self.client().post('/api/v1/questions',
-            content_type='application/json',
-            data=json.dumps(
-            {
-                'question': 'Is computer Science good?',
-                'answer': 'Yes its good',
-                'difficulty': 2,
-                'category': 2
-            }
+        response = self.client().post(
+            '/api/v1/questions',
+            content_type='application/json', data=json.dumps(
+                {
+                    'question': 'Is computer Science good?',
+                    'answer': 'Yes its good',
+                    'difficulty': 2,
+                    'category': 2
+                }
             )
         )
         data = json.loads(response.data)
@@ -146,15 +151,16 @@ class TriviaTestCase(unittest.TestCase):
         """
             Test creating a question with a wrong request url
         """
-        response = self.client().post('/api/v1/questions/2',
+        response = self.client().post(
+            '/api/v1/questions/2',
             content_type='application/json',
             data=json.dumps(
-            {
-                'question': 'Is computer Science good?',
-                'answer': 'Yes its good',
-                'difficulty': 2,
-                'category': 2
-            }
+                {
+                    'question': 'Is computer Science good?',
+                    'answer': 'Yes its good',
+                    'difficulty': 2,
+                    'category': 2
+                }
             )
         )
         data = json.loads(response.data)
@@ -167,7 +173,8 @@ class TriviaTestCase(unittest.TestCase):
             Test searching a question using a correct search term.
         """
         search_term = 'four'
-        response = self.client().post('/api/v1/questions/search',
+        response = self.client().post(
+            '/api/v1/questions/search',
             content_type='application/json',
             data=json.dumps({'searchTerm': search_term})
         )
@@ -176,12 +183,13 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['total_questions'], 1)
 
-    def test_failure_response_for_searching_a_question_not_in_the_database(self):
+    def test_failure_response_for_searching_question_not_in_the_database(self):
         """
             Test searching a question using a wrong search term.
         """
-        search_term = 'fred'
-        response = self.client().post('/api/v1/questions/search',
+        search_term = 'habib'
+        response = self.client().post(
+            '/api/v1/questions/search',
             content_type='application/json',
             data=json.dumps({'searchTerm': search_term})
         )
@@ -194,10 +202,13 @@ class TriviaTestCase(unittest.TestCase):
         """
             Test playing a quiz category and previous question parameters.
         """
-        response = self.client().post('/api/v1/quizzes',
+        response = self.client().post(
+            '/api/v1/quizzes',
             content_type='application/json',
             data=json.dumps(
-                {'previous_questions': [], 'quiz_category': {'id': 0, 'type': 'all'}}
+                {
+                    'previous_questions': [],
+                    'quiz_category': {'id': 0, 'type': 'all'}}
             )
         )
         data = json.loads(response.data)
